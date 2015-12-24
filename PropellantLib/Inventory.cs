@@ -152,36 +152,33 @@ namespace FC.PropellantLib
 		/**
 		 * Check if a player's inventory contains the specified item.
 		 **/
-		/*
 		public static bool DoesPlayerHaveItem(ushort _itemID, UnturnedPlayer _player)
 		{
-			foreach (Item item in _player.Inventory.Items)
+			foreach (Items item in _player.Inventory.Items)
 			{
-				if (item.id == _itemID) return true;
+				if (item.getItem(0).item.id == _itemID) return true;
 			}
 
 			return false;
-		}*/
+		}
 
 		/**
 		 * Get the number of items of a specified type in a player's
 		 * inventory.
 		 **/
-		/*
 		public static ushort GetItemCount(ushort _itemID, UnturnedPlayer _player)
 		{
-			foreach (Item item in _player.Inventory.Items)
+			foreach (Items item in _player.Inventory.Items)
 			{
-				if (item.id == _itemID)
+				if (item.getItem(0).item.id == _itemID)
 				{
-					return item.Amount;
+					return item.getItem(0).item.Amount;
 				}
 			}
 
 			return 0;
 		}
-		*/
-
+			
 		//TODO: Fill in.
 		/**
 		 * Drop all items in a player's inventory on the ground.

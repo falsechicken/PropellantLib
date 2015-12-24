@@ -28,7 +28,7 @@ using SDG.Unturned;
 
 namespace FC.PropellantLib
 {
-	public class Player
+	public static class Player
 	{
 		#region KILL PLAYER
 
