@@ -32,133 +32,62 @@ namespace FC.PropellantLib
 	 **/
 	public static class Inventory
 	{
+
 		/**
 		 * Remove all items from a player's inventory.
 		 **/
-		public static bool ClearItems(UnturnedPlayer _player)
+		public static bool Clear(UnturnedPlayer _player)
 		{
-			bool bSuccess = false;
 
-			try
+			// Loops over each of the player's inventory pages
+			for (byte page = 0; page < 8; page++)
 			{
-				_player.Player.equipment.dequip();
-
-				for (byte p = 0; p < PlayerInventory.PAGES; p++)
+				// gets the item count for the current inventory page its looking in
+				var items = _player.Inventory.getItemCount(page);
+				// loop over all items in current inventory page
+				for (byte index = 0; index < items; index++)
 				{
-					byte itemc = _player.Player.inventory.getItemCount(p);
-
-					if (itemc > 0)
-					{
-						for (byte p1 = 0; p1 < itemc; p1++)
-						{
-
-							_player.Player.inventory.removeItem(p, 0);
-						
-						}
-					}
+					// remove the item
+					_player.Inventory.removeItem(page, 0);
 				}
-
-				_player.Player.SteamChannel.send("tellSlot", ESteamCall.ALL, ESteamPacket.UPDATE_RELIABLE_BUFFER, new object[]
-					{
-						(byte)0,
-						(byte)0,
-						new byte[0]
-					});
-
-				_player.Player.SteamChannel.send("tellSlot", ESteamCall.ALL, ESteamPacket.UPDATE_RELIABLE_BUFFER, new object[]
-					{
-						(byte)1,
-						(byte)0,
-						new byte[0]
-					});
-
-				bSuccess = true;
-			
 			}
 
-			catch (Exception e)
-			{
+			// "Remove "models" of items from player "body""
+			_player.Player.channel.send("tellSlot", ESteamCall.ALL, ESteamPacket.UPDATE_RELIABLE_BUFFER,
+				(byte) 0, (byte) 0, new byte[0]);
+			_player.Player.channel.send("tellSlot", ESteamCall.ALL, ESteamPacket.UPDATE_RELIABLE_BUFFER,
+				(byte) 1, (byte) 0, new byte[0]);
 
-				Console.Write(e);
-			
-			}
+			// Unequip & remove from inventory
+			_player.Player.clothing.askWearBackpack(0, 0, new byte[0], true);
+			removeUnequipped (_player);
 
-			return bSuccess;
+			_player.Player.clothing.askWearGlasses(0, 0, new byte[0], true);
+			removeUnequipped (_player);
+
+			_player.Player.clothing.askWearHat(0, 0, new byte[0], true);
+			removeUnequipped (_player);
+
+			_player.Player.clothing.askWearPants(0, 0, new byte[0], true);
+			removeUnequipped (_player);
+
+			_player.Player.clothing.askWearMask(0, 0, new byte[0], true);
+			removeUnequipped (_player);
+
+			_player.Player.clothing.askWearShirt(0, 0, new byte[0], true);
+			removeUnequipped (_player);
+
+			_player.Player.clothing.askWearVest(0, 0, new byte[0], true);
+			removeUnequipped (_player);
+
+			return true;
 		}
-
-		/**
-		 * Remove all clothing equiped on a player.
-		 **/
-		public static bool ClearClothes(UnturnedPlayer _player)
-		{
-			bool bSuccess = false;
-
-			try
-			{
-				_player.Player.Clothing.askWearBackpack(0, 0, new byte[0]);
-				for (byte p2 = 0; p2 < _player.Player.Inventory.getItemCount(2); p2++)
-				{
-					_player.Player.Inventory.removeItem(2, 0);
-				}
-
-				_player.Player.Clothing.askWearGlasses(0, 0, new byte[0]);
-				for (byte p2 = 0; p2 < _player.Player.Inventory.getItemCount(2); p2++)
-				{
-					_player.Player.Inventory.removeItem(2, 0);
-				}
-
-				_player.Player.Clothing.askWearHat(0, 0, new byte[0]);
-				for (byte p2 = 0; p2 < _player.Player.Inventory.getItemCount(2); p2++)
-				{
-					_player.Player.Inventory.removeItem(2, 0);
-				}
-
-				_player.Player.Clothing.askWearMask(0, 0, new byte[0]);
-				for (byte p2 = 0; p2 < _player.Player.Inventory.getItemCount(2); p2++)
-				{
-					_player.Player.Inventory.removeItem(2, 0);
-				}
-
-				_player.Player.Clothing.askWearPants(0, 0, new byte[0]);
-				for (byte p2 = 0; p2 < _player.Player.Inventory.getItemCount(2); p2++)
-				{
-					_player.Player.Inventory.removeItem(2, 0);
-				}
-
-				_player.Player.Clothing.askWearShirt(0, 0, new byte[0]);
-				for (byte p2 = 0; p2 < _player.Player.Inventory.getItemCount(2); p2++)
-				{
-					_player.Player.Inventory.removeItem(2, 0);
-				}
-
-				_player.Player.Clothing.askWearVest(0, 0, new byte[0]);
-				for (byte p2 = 0; p2 < _player.Player.Inventory.getItemCount(2); p2++)
-				{
-					_player.Player.Inventory.removeItem(2, 0);
-				}
-
-				bSuccess = true;
-			}
-			catch (Exception e)
-			{
-
-				Console.Write(e);
-
-			}
-
-			return bSuccess;
-		}
-
+			
 		/**
 		 * Check if a player's inventory contains the specified item.
 		 **/
 		public static bool DoesPlayerHaveItem(ushort _itemID, UnturnedPlayer _player)
 		{
-			foreach (Items item in _player.Inventory.Items)
-			{
-				if (item.getItem(0).item.id == _itemID) return true;
-			}
-
 			return false;
 		}
 
@@ -168,33 +97,23 @@ namespace FC.PropellantLib
 		 **/
 		public static ushort GetItemCount(ushort _itemID, UnturnedPlayer _player)
 		{
-			foreach (Items item in _player.Inventory.Items)
-			{
-				if (item.getItem(0).item.id == _itemID)
-				{
-					return item.getItem(0).item.Amount;
-				}
-			}
-
 			return 0;
 		}
-			
-		//TODO: Fill in.
+
 		/**
 		 * Drop all items in a player's inventory on the ground.
 		 **/
 		public static bool DropItems(UnturnedPlayer _player)
 		{
-			return false;	
-		}
-
-		//TODO: Fill in.
-		/**
-		 * Drop all the clothing equiped by a player on the ground.
-		 **/
-		public static bool DropClothes(UnturnedPlayer _player)
-		{
 			return false;
+		}
+			
+
+		private static void removeUnequipped(UnturnedPlayer _player)
+		{
+			for (byte i = 0; i < _player.Inventory.getItemCount (2); i++) {
+				_player.Inventory.removeItem (2, 0);
+			}
 		}
 	}
 }

@@ -24,12 +24,14 @@
 using System;
 
 using Rocket.Unturned.Player;
+
 using SDG.Unturned;
 
 namespace FC.PropellantLib
 {
 	public static class Player
 	{
+
 		#region KILL PLAYER
 
 		/**
@@ -41,11 +43,35 @@ namespace FC.PropellantLib
 		}
 
 		/**
-		 * Kill the specified player.
+		 * Kill the specified player, specifing the cause of death.
 		 **/
 		public static void Kill(UnturnedPlayer _player, EDeathCause _deathCause)
 		{
 			_player.Damage(255, _player.Position, _deathCause, ELimb.SKULL, _player.CSteamID);
+		}
+
+		#endregion
+
+		#region HEAL PLAYER
+
+		/**
+		 * Fully heal the specified player.
+		 */
+		public static void Heal(UnturnedPlayer _player)
+		{
+			_player.Heal(255);
+		}
+			
+		#endregion
+
+		#region SET HEALTH
+
+		/**
+		 * Set the specified players health.
+		 */
+		public static void SetHealth(UnturnedPlayer _player, byte _newHealth)
+		{
+			_player.Player.life.tellHealth (_player.CSteamID, _newHealth);
 		}
 
 		#endregion
