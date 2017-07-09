@@ -88,6 +88,17 @@ namespace FC.PropellantLib
 		 **/
 		public static bool DoesPlayerHaveItem(ushort _itemID, UnturnedPlayer _player)
 		{
+			for (byte page = 0; page < 8; page++)
+			{
+				var items = _player.Inventory.getItemCount(page);
+
+				for (byte index = 0; index < items; index++)
+				{
+					if (_player.Inventory.getItem (page, index).item.id == _itemID)
+						return true;
+				}
+			}
+
 			return false;
 		}
 
@@ -97,7 +108,20 @@ namespace FC.PropellantLib
 		 **/
 		public static ushort GetItemCount(ushort _itemID, UnturnedPlayer _player)
 		{
-			return 0;
+			byte count = 0;
+
+			for (byte page = 0; page < 8; page++)
+			{
+				var items = _player.Inventory.getItemCount(page);
+
+				for (byte index = 0; index < items; index++)
+				{
+					if (_player.Inventory.getItem (page, index).item.id == _itemID)
+						count++;
+				}
+			}
+
+			return count;
 		}
 
 		/**
