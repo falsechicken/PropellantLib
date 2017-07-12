@@ -53,6 +53,7 @@
     <Compile Include="Inventory.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="World.cs" />
+    <Compile Include="Math.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

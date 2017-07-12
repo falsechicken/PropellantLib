@@ -25,6 +25,8 @@ using Rocket.Unturned.Player;
 
 using SDG.Unturned;
 
+using System.Collections.Generic;
+
 namespace FC.PropellantLib
 {
 	/**
@@ -32,6 +34,10 @@ namespace FC.PropellantLib
 	 **/
 	public static class Inventory
 	{
+
+
+		public const byte SECTION_HANDS = 2, SECTION_BACKPACK = 3, SECTION_VEST = 4, SECTION_SHIRT = 5, SECTION_PANTS = 6;
+	
 
 		/**
 		 * Remove all items from a player's inventory.
@@ -125,11 +131,56 @@ namespace FC.PropellantLib
 		}
 
 		/**
+		 * Returns true if the inventory section provided contains the item.
+		 */
+		public static bool DoesInventorySectionContainItem(byte _section, ushort _itemID, UnturnedPlayer _player) {
+			var items = _player.Inventory.getItemCount(_section);
+
+			for (byte index = 0; index < items; index++)
+			{
+				if (_player.Inventory.getItem (_section, index).item.id == _itemID)
+					return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Returns a list of ItemJars containing all of the items of the provided section and id.
+		 */
+		public static List<ItemJar> GetItemsFromSection(byte _section, ushort _itemID, UnturnedPlayer _player) {
+
+			List<ItemJar> itemsList = new List<ItemJar> ();
+
+			var items = _player.Inventory.getItemCount(_section);
+
+			for (byte index = 0; index < items; index++)
+			{
+				if (_player.Inventory.getItem (_section, index).item.id == _itemID)
+					itemsList.Add(_player.Inventory.getItem(_section, index));
+			}
+
+			return itemsList;
+		}
+
+		/**
 		 * Drop all items in a player's inventory on the ground.
 		 **/
 		public static bool DropItems(UnturnedPlayer _player)
 		{
-			return false;
+			throw new NotImplementedException("Inventory.DropItems not implemented yet.");
+
+			for (byte page = 0; page < 8; page++)
+			{
+				var items = _player.Inventory.getItemCount(page);
+
+				for (byte index = 0; index < items; index++)
+				{
+					
+				}
+			}
+
+			return true;
 		}
 			
 

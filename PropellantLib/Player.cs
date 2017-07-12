@@ -39,7 +39,7 @@ namespace FC.PropellantLib
 		 **/
 		public static void Kill(UnturnedPlayer _player)
 		{
-			_player.Damage(255, _player.Position, EDeathCause.SUICIDE, ELimb.SKULL, _player.CSteamID);
+			_player.Damage(255, _player.Position, EDeathCause.KILL, ELimb.SKULL, _player.CSteamID);
 		}
 
 		/**
