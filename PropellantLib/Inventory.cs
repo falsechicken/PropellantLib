@@ -20,12 +20,12 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 using Rocket.Unturned.Player;
 
 using SDG.Unturned;
-
-using System.Collections.Generic;
+using UnityEngine;
 
 namespace FC.PropellantLib
 {
@@ -34,11 +34,16 @@ namespace FC.PropellantLib
 	 **/
 	public static class Inventory
 	{
-
-
-		public const byte SECTION_HANDS = 2, SECTION_BACKPACK = 3, SECTION_VEST = 4, SECTION_SHIRT = 5, SECTION_PANTS = 6;
+		/**
+		 * Quick reference for inventory sections.
+		 */
+		public const byte
+		SECTION_HANDS = 2,
+		SECTION_BACKPACK = 3,
+		SECTION_VEST = 4,
+		SECTION_SHIRT = 5,
+		SECTION_PANTS = 6;
 	
-
 		/**
 		 * Remove all items from a player's inventory.
 		 **/
@@ -89,6 +94,54 @@ namespace FC.PropellantLib
 			return true;
 		}
 			
+		/**
+		 * Forces an item into the players inventory. If there is no room it
+		 * will be dropped on the ground.
+		 */
+		public static void ForceAddItem(Item _item, UnturnedPlayer _player)
+		{
+			_player.Inventory.forceAddItem (_item, true);
+		}
+
+		/**
+		 * Forces a list of items into the players inventory. If there is no room it
+		 * will be dropped on the ground.
+		 */
+		public static void ForceAddItems(List<Item> _items, UnturnedPlayer _player)
+		{
+			foreach (Item item in _items) {
+				_player.Inventory.forceAddItem (item, true);
+			}
+
+		}
+
+		/**
+		 * Remove all items of a specified type from a players inventory.
+		 */
+		public static void RemoveItemsOfType(ushort _itemID, UnturnedPlayer _player)
+		{
+			List<Vector2> itemsToRemove = new List<Vector2> ();
+
+			for (byte page = 0; page < 8; page++)
+			{
+				itemsToRemove.Clear ();
+
+				var items = _player.Inventory.getItemCount(page);
+
+				for (byte index = 0; index < items; index++)
+				{
+					if (_player.Inventory.getItem (page, index).item.id == _itemID) {
+						itemsToRemove.Add ( new Vector2 (_player.Inventory.getItem (page, index).x, _player.Inventory.getItem (page, index).y));
+					}
+				}
+
+				foreach (Vector2 loc in itemsToRemove) {
+					_player.Inventory.removeItem (page,
+						_player.Inventory.getIndex(page, (byte)loc.x, (byte)loc.y));
+				}
+			}
+		}
+
 		/**
 		 * Check if a player's inventory contains the specified item.
 		 **/
@@ -146,18 +199,43 @@ namespace FC.PropellantLib
 		}
 
 		/**
-		 * Returns a list of ItemJars containing all of the items of the provided section and id.
+		 * Returns a nested dictionary containing all the items in the players inventory. The first dictionary
+		 * key refers to the inventory section. The second is the items index position in the inventory section followed
+		 * by the ItemJar containing the item.
 		 */
-		public static List<ItemJar> GetItemsFromSection(byte _section, ushort _itemID, UnturnedPlayer _player) {
+		public static Dictionary<byte, Dictionary<byte, ItemJar>> GetInventory(UnturnedPlayer _player)
+		{
+			Dictionary<byte, Dictionary<byte, ItemJar>> allItems = new Dictionary<byte, Dictionary<byte, ItemJar>>();
 
-			List<ItemJar> itemsList = new List<ItemJar> ();
+			for (byte page = 0; page < 8; page++)
+			{
+				allItems [page] = new Dictionary<byte, ItemJar> ();
+
+				var items = _player.Inventory.getItemCount(page);
+			
+				for (byte index = 0; index < items; index++)
+				{
+					allItems [page].Add (index, _player.Inventory.getItem (page, index));
+				}
+			}
+
+			return allItems;
+		}
+
+		/**
+		 * Returns a dictionary of bytes & ItemJars containing all of the items of the provided section and id. The
+		 * byte is the itemjars position in the sections inventory list.
+		 */
+		public static Dictionary<byte,ItemJar> GetItemsFromSection(byte _section, ushort _itemID, UnturnedPlayer _player) {
+
+			Dictionary<byte,ItemJar> itemsList = new Dictionary<byte,ItemJar> ();
 
 			var items = _player.Inventory.getItemCount(_section);
 
 			for (byte index = 0; index < items; index++)
 			{
 				if (_player.Inventory.getItem (_section, index).item.id == _itemID)
-					itemsList.Add(_player.Inventory.getItem(_section, index));
+					itemsList[index] = _player.Inventory.getItem(_section, index);
 			}
 
 			return itemsList;
