@@ -143,6 +143,38 @@ namespace FC.PropellantLib
 		}
 
 		/**
+		 * Remove a number of items of a specified type from a players inventory.
+		 */
+		public static void RemoveItemsOfType(ushort _itemID, ushort _numberToRemove, UnturnedPlayer _player)
+		{
+			List<Vector2> itemsToRemove = new List<Vector2> ();
+			ushort numberRemoved = 0;
+
+			for (byte page = 0; page < 8; page++)
+			{
+				itemsToRemove.Clear ();
+
+				if (numberRemoved == _numberToRemove)
+					break;
+
+				var items = _player.Inventory.getItemCount(page);
+
+				for (byte index = 0; index < items; index++)
+				{
+					if (_player.Inventory.getItem (page, index).item.id == _itemID && numberRemoved < _numberToRemove) {
+						itemsToRemove.Add ( new Vector2 (_player.Inventory.getItem (page, index).x, _player.Inventory.getItem (page, index).y));
+						numberRemoved++;
+					}
+				}
+
+				foreach (Vector2 loc in itemsToRemove) {
+					_player.Inventory.removeItem (page,
+						_player.Inventory.getIndex(page, (byte)loc.x, (byte)loc.y));
+				}
+			}
+		}
+
+		/**
 		 * Check if a player's inventory contains the specified item.
 		 **/
 		public static bool DoesPlayerHaveItem(ushort _itemID, UnturnedPlayer _player)
